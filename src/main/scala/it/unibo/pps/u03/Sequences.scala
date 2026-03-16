@@ -32,7 +32,10 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30], 0 => [10, 20, 30]
      * E.g., [], 2 => []
      */
-    def skip[A](s: Sequence[A])(n: Int): Sequence[A] = ???
+    def skip[A](s: Sequence[A])(n: Int): Sequence[A] = (s, n) match
+      case (Nil(), _) => Nil()
+      case (Cons(head, tail), 0) => Cons(head, tail)
+      case (Cons(head, tail), n) => skip(tail)(n - 1)
 
     /*
      * Zip two sequences
@@ -40,7 +43,10 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10], [] => []
      * E.g., [], [] => []
      */
-    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = ???
+    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = (first, second) match
+      case (Nil(), _) => Nil()
+      case (_, Nil()) => Nil()
+      case (Cons(h1, t1), Cons(h2, t2)) => Cons((h1, h2), zip(t1, t2))
 
     /*
      * Concatenate two sequences
@@ -48,15 +54,21 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10], [] => [10]
      * E.g., [], [] => []
      */
-    def concat[A](s1: Sequence[A], s2: Sequence[A]): Sequence[A] = ???
+    def concat[A](s1: Sequence[A], s2: Sequence[A]): Sequence[A] = (s1, s2) match
+      case (Nil(), Nil()) => Nil()
+      case (Nil(), Cons(h, t)) => Cons(h, t)
+      case (Cons(h, t), Nil()) => Cons(h, t)
+      case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1, concat(t1, Cons(h2, t2)))
 
-    /*
+     /*
      * Reverse the sequence
      * E.g., [10, 20, 30] => [30, 20, 10]
      * E.g., [10] => [10]
      * E.g., [] => []
      */
-    def reverse[A](s: Sequence[A]): Sequence[A] = ???
+    def reverse[A](s: Sequence[A]): Sequence[A] = s match
+      case Nil() => Nil()
+      case Cons(h, t) => concat(reverse(t), Cons(h, Nil()))
 
     /*
      * Map the elements of the sequence to a new sequence and flatten the result
@@ -64,7 +76,10 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30], calling with mapper(v => [v]) returns [10, 20, 30]
      * E.g., [10, 20, 30], calling with mapper(v => Nil()) returns []
      */
-    def flatMap[A, B](s: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = ???
+    def flatMap[A, B](s: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = (s, mapper) match
+      case (_, Nil) => Nil()
+      case (Nil(), _) => Nil()
+      case (Cons(h, t), f) => concat(f(h), flatMap(t)(f))
 
     /*
      * Get the minimum element in the sequence
