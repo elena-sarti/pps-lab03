@@ -2,6 +2,8 @@ package u03
 
 import u03.Optionals.Optional
 
+import scala.annotation.tailrec
+
 object Sequences: // Essentially, generic linkedlists
   
   enum Sequence[E]:
@@ -32,6 +34,7 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30], 0 => [10, 20, 30]
      * E.g., [], 2 => []
      */
+    @tailrec
     def skip[A](s: Sequence[A])(n: Int): Sequence[A] = (s, n) match
       case (Nil(), _) => Nil()
       case (Cons(head, tail), 0) => Cons(head, tail)
@@ -86,14 +89,22 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [30, 20, 10] => 10
      * E.g., [10, 1, 30] => 1
      */
-    def min(s: Sequence[Int]): Optional[Int] = ???
+    @tailrec
+    def min(s: Sequence[Int]): Optional[Int] = s match
+      case Nil() => Optional.Empty()
+      case Cons(h, Nil()) => Optional.Just(h)
+      case Cons(h, Cons(h1, t1)) if h<h1 => min(Cons(h, t1))
+      case Cons(h, Cons(h1, t1)) if h>h1 => min(Cons(h1, t1))
 
     /*
      * Get the elements at even indices
      * E.g., [10, 20, 30] => [10, 30]
      * E.g., [10, 20, 30, 40] => [10, 30]
      */
-    def evenIndices[A](s: Sequence[A]): Sequence[A] = ???
+    def evenIndices[A](s: Sequence[A]): Sequence[A] = s match
+      case Nil() => Nil()
+      case Cons(h, Nil()) => Cons(h, Nil())
+      case Cons(h, Cons(h1, t1)) => Cons(h, evenIndices(t1))
 
     /*
      * Check if the sequence contains the element
