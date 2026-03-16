@@ -94,7 +94,7 @@ object Sequences: // Essentially, generic linkedlists
       case Nil() => Optional.Empty()
       case Cons(h, Nil()) => Optional.Just(h)
       case Cons(h, Cons(h1, t1)) if h<h1 => min(Cons(h, t1))
-      case Cons(h, Cons(h1, t1)) if h>h1 => min(Cons(h1, t1))
+      case Cons(h, Cons(h1, t1)) => min(Cons(h1, t1))
 
     /*
      * Get the elements at even indices
@@ -123,7 +123,15 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 10, 30] => [10, 20, 30]
      * E.g., [10, 20, 30] => [10, 20, 30]
      */
-    def distinct[A](s: Sequence[A]): Sequence[A] = ???
+    def distinct[A](s: Sequence[A]): Sequence[A] =
+      @tailrec
+      def _distinct(sequence: Sequence[A], acc: Sequence[A]): Sequence[A] = sequence match
+        case Nil() => acc
+        case Cons(h, Nil()) if contains(acc)(h) => acc
+        case Cons(h, Nil()) => concat(acc, Cons(h, Nil()))
+        case Cons(h, t) if contains(acc)(h) => _distinct(t, acc)
+        case Cons(h, t) => _distinct(t, concat(acc, Cons(h, Nil())))
+      _distinct(s, Nil())
 
     /*
      * Group contiguous elements in the sequence
@@ -131,14 +139,26 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30] => [[10], [20], [30]]
      * E.g., [10, 20, 20, 30] => [[10], [20, 20], [30]]
      */
-    def group[A](s: Sequence[A]): Sequence[Sequence[A]] = ???
+    def group[A](s: Sequence[A]): Sequence[Sequence[A]] = s match
+      case Nil() => Nil()
+      case Cons(h, Nil()) => Cons(Cons(h, Nil()), Nil())
+      case Cons(h, Cons(h1, t1)) if h==h1 => Cons(Cons(h, Cons(h1, Nil())), group(t1))
+      case Cons(h, t) => Cons(Cons(h, Nil()), group(t))
 
     /*
      * Partition the sequence into two sequences based on the predicate
      * E.g., [10, 20, 30] => ([10], [20, 30]) if pred is (_ < 20)
      * E.g., [11, 20, 31] => ([20], [11, 31]) if pred is (_ % 2 == 0)
      */
-    def partition[A](s: Sequence[A])(pred: A => Boolean): (Sequence[A], Sequence[A]) = ???
+    def partition[A](s: Sequence[A])(pred: A => Boolean): (Sequence[A], Sequence[A]) =
+      @tailrec
+      def recursivePartition(sequence: Sequence[A], f: A => Boolean, acc1: Sequence[A], acc2: Sequence[A]): (Sequence[A], Sequence[A]) = sequence match
+        case Nil() => (acc1, acc2)
+        case Cons(h, Nil()) if f(h) => (concat(acc1, Cons(h, Nil())), concat(acc2, Nil()))
+        case Cons(h, Nil()) => (acc1, concat(acc2, Cons(h, Nil())))
+        case Cons(h, t) if f(h) => recursivePartition(t, f, concat(acc1, Cons(h, Nil())), acc2)
+        case Cons(h, t) => recursivePartition(t, f, acc1, concat(acc2, Cons(h, Nil())))
+      recursivePartition(s, pred, Nil(), Nil())
 
 @main def trySequences =
   import Sequences.* 
