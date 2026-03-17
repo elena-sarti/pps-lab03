@@ -40,5 +40,13 @@ object Task2 extends App:
 
     @main
     def tryFoldLeft(): Unit =
-      val lst = Cons(3, Cons(7, Cons(1, Cons(5, Nil()))))
-      println(foldLeft(lst)(0)(_ - _))
+      val list = Cons(3, Cons(7, Cons(1, Cons(5, Nil()))))
+      println(foldLeft(list)(0)(_ - _))
+
+    def getCoursesNumber(sequence: Sequence[Person]): Int =
+      length(distinct(getCourses(sequence)))
+
+    @main
+    def tryGetCoursesNumber(): Unit =
+      val list = Cons(Teacher("Viroli", "PPS"), Cons(Student("Elena Sarti", 2003),  Cons(Teacher("Aguzzi", "PPS"), Cons(Teacher("Ricci", "PCD"), Nil()))))
+      println(getCoursesNumber(list)) //2

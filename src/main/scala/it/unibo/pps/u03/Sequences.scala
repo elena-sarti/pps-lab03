@@ -16,6 +16,10 @@ object Sequences: // Essentially, generic linkedlists
       case Cons(h, t) => h + sum(t)
       case _          => 0
 
+    def length[A](l: Sequence[A]): Int = l match
+      case Cons(h, t) => 1 + length(t)
+      case _ => 0
+
     def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
       case Cons(h, t) => Cons(mapper(h), map(t)(mapper))
       case Nil()      => Nil()
