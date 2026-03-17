@@ -59,11 +59,19 @@ object Streams extends App :
       case (Empty(), Cons(h, t))        => cons(h(), interleave(empty(), t()))
       case (Cons(h1, t1), Cons(h2, t2)) => cons(h1(), cons(h2(), interleave(t1(), t2())))
 
+    def cycle[A](list: Sequence[A]): Stream[A] =
+      def _cycle(list: Sequence[A], originalList: Sequence[A]): Stream[A] = list match
+        case Sequence.Nil() => empty()
+        case Sequence.Cons(h, Sequence.Nil()) => cons(h, cycle(originalList))
+        case Sequence.Cons(h, t) => cons(h, _cycle(t, originalList))
+      _cycle(list, list)
+
   end Stream
 
 
 @main def tryStreams =
-  import Streams.* 
+  import Streams.*
+  import Sequences.Sequence.*
 
   val str1 = Stream.iterate(0)(_ + 1) // {0,1,2,3,..}
   val str2 = Stream.map(str1)(_ + 1) // {1,2,3,4,..}
@@ -75,11 +83,14 @@ object Streams extends App :
   val s1 = Stream.take(Stream.iterate(1)(_ + 2))(3)
   val s2 = Stream.take(Stream.iterate(2)(_ + 2))(5)
   val str8 = Stream.interleave(s1, s2)
+  val repeat = Stream.cycle(Cons("a", Cons("b", Cons ("c", Nil()))))
+  val str9 = Stream.take(repeat)(5)
 
   println(Stream.toList(str5)) //  Cons (0 , Cons (1 , Cons (2 , Cons (3 , Cons (4 , Nil ())))))
   println(Stream.toList(str6)) // Cons (a, Cons (a, Cons (a, Nil ())))
   println(Stream.toList(str7)) // Cons (0 , Cons (1 , Cons (1 , Cons (2 , Cons (3 , Nil ()))))
   println(Stream.toList(str8)) //  Cons (1 , Cons (2 , Cons (3 , Cons (4 , Cons (5 , Cons (6 , Cons (8 , Cons (10, Nil())))))))
+  println(Stream.toList(str9)) // Cons (a, Cons (b, Cons (c, Cons (a, Cons (b, Nil ())))))
 
   lazy val corec: Stream[Int] = Stream.cons(1, corec) // {1,1,1,..}
   //println(Stream.toList(Stream.take(corec)(10))) // [1,1,..,1]
