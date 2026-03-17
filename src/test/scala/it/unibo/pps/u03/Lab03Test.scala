@@ -8,9 +8,7 @@ object Lab03Test extends App:
   class Task1Test:
 
     import u03.Sequences.*
-    import Sequence.Cons
-    import Sequence.Nil
-    import Lab03.Task1.*
+    import Sequence.*
     import u03.Optionals.*
     import Optional.*
 
@@ -74,14 +72,13 @@ object Lab03Test extends App:
       assertEquals(Cons(20, Nil()), even)
       assertEquals(Cons(11, Cons(31, Nil())), odd)
 
+
   class Task2Test:
 
     import Lab03.Task2.*
     import Person.*
     import u03.Sequences.*
-    import Sequence.Cons
-    import Sequence.Nil
-    import Lab03.Task1.*
+    import Sequence.*
 
     @Test def tryCourses(): Unit =
       val sequence1 = Cons(Student("Sarti", 2003), Cons(Teacher("Aguzzi", "PPS"), Nil()))
@@ -97,6 +94,33 @@ object Lab03Test extends App:
       val coursesNumber = 2
       assertEquals(getCoursesNumber(list), coursesNumber)
 
+
   class Task3Test:
 
-    
+    import u03.Sequences.*
+    import Sequence.*
+    import u03.Streams.*
+    import Stream.*
+
+    @Test def tryTakeWhile(): Unit =
+      val stream = takeWhile(Stream.iterate(0)(_ + 1))(_ < 5)
+      assertEquals(toList(stream), Cons(0 , Cons(1 , Cons(2 , Cons(3 , Cons(4 , Nil()))))))
+
+    @Test def tryFill(): Unit =
+      val stream = fill(3)("a")
+      assertEquals(toList(stream), Cons("a", Cons("a", Cons("a", Nil()))))
+
+    @Test def tryFibonacci(): Unit =
+      val stream = take(fibonacci())(5)
+      assertEquals(toList(stream), Cons(0 , Cons(1 , Cons(1 , Cons(2 , Cons(3 , Nil()))))))
+
+    @Test def tryInterleave(): Unit =
+      val s1 = take(iterate(1)(_ + 2))(3)
+      val s2 = take(iterate(2)(_ + 2))(5)
+      val stream = interleave(s1, s2)
+      assertEquals(toList(stream), Cons(1 , Cons(2 , Cons(3 , Cons(4 , Cons(5 , Cons(6 , Cons(8 , Cons(10, Nil())))))))))
+
+    @Test def tryCycle(): Unit =
+      val sequence = Cons("a", Cons("b", Cons ("c", Nil())))
+      val stream = take(cycle(sequence))(5)
+      assertEquals(toList(stream), Cons("a", Cons("b", Cons("c", Cons("a", Cons("b", Nil ()))))))
