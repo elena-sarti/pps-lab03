@@ -61,9 +61,9 @@ object Streams extends App :
 
     def cycle[A](list: Sequence[A]): Stream[A] =
       def _cycle(list: Sequence[A], originalList: Sequence[A]): Stream[A] = list match
-        case Sequence.Nil() => empty()
+        case Sequence.Nil()                   => empty()
         case Sequence.Cons(h, Sequence.Nil()) => cons(h, cycle(originalList))
-        case Sequence.Cons(h, t) => cons(h, _cycle(t, originalList))
+        case Sequence.Cons(h, t)              => cons(h, _cycle(t, originalList))
       _cycle(list, list)
 
   end Stream
