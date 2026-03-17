@@ -18,7 +18,7 @@ object Sequences: // Essentially, generic linkedlists
 
     def length[A](l: Sequence[A]): Int = l match
       case Cons(h, t) => 1 + length(t)
-      case _ => 0
+      case _          => 0
 
     def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
       case Cons(h, t) => Cons(mapper(h), map(t)(mapper))
@@ -40,7 +40,7 @@ object Sequences: // Essentially, generic linkedlists
      */
     @tailrec
     def skip[A](s: Sequence[A])(n: Int): Sequence[A] = (s, n) match
-      case (Nil(), _) => Nil()
+      case (Nil(), _)            => Nil()
       case (Cons(head, tail), 0) => Cons(head, tail)
       case (Cons(head, tail), n) => skip(tail)(n - 1)
 
@@ -51,8 +51,8 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [], [] => []
      */
     def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = (first, second) match
-      case (Nil(), _) => Nil()
-      case (_, Nil()) => Nil()
+      case (Nil(), _)                   => Nil()
+      case (_, Nil())                   => Nil()
       case (Cons(h1, t1), Cons(h2, t2)) => Cons((h1, h2), zip(t1, t2))
 
     /*
@@ -62,9 +62,9 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [], [] => []
      */
     def concat[A](s1: Sequence[A], s2: Sequence[A]): Sequence[A] = (s1, s2) match
-      case (Nil(), Nil()) => Nil()
-      case (Nil(), Cons(h, t)) => Cons(h, t)
-      case (Cons(h, t), Nil()) => Cons(h, t)
+      case (Nil(), Nil())               => Nil()
+      case (Nil(), Cons(h, t))          => Cons(h, t)
+      case (Cons(h, t), Nil())          => Cons(h, t)
       case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1, concat(t1, Cons(h2, t2)))
 
      /*
@@ -74,7 +74,7 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [] => []
      */
     def reverse[A](s: Sequence[A]): Sequence[A] = s match
-      case Nil() => Nil()
+      case Nil()      => Nil()
       case Cons(h, t) => concat(reverse(t), Cons(h, Nil()))
 
     /*
@@ -84,8 +84,8 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30], calling with mapper(v => Nil()) returns []
      */
     def flatMap[A, B](s: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = (s, mapper) match
-      case (_, Nil) => Nil()
-      case (Nil(), _) => Nil()
+      case (_, Nil)        => Nil()
+      case (Nil(), _)      => Nil()
       case (Cons(h, t), f) => concat(f(h), flatMap(t)(f))
 
     /*
@@ -95,10 +95,10 @@ object Sequences: // Essentially, generic linkedlists
      */
     @tailrec
     def min(s: Sequence[Int]): Optional[Int] = s match
-      case Nil() => Optional.Empty()
-      case Cons(h, Nil()) => Optional.Just(h)
+      case Nil()                         => Optional.Empty()
+      case Cons(h, Nil())                => Optional.Just(h)
       case Cons(h, Cons(h1, t1)) if h<h1 => min(Cons(h, t1))
-      case Cons(h, Cons(h1, t1)) => min(Cons(h1, t1))
+      case Cons(h, Cons(h1, t1))         => min(Cons(h1, t1))
 
     /*
      * Get the elements at even indices
@@ -106,8 +106,8 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 30, 40] => [10, 30]
      */
     def evenIndices[A](s: Sequence[A]): Sequence[A] = s match
-      case Nil() => Nil()
-      case Cons(h, Nil()) => Cons(h, Nil())
+      case Nil()                 => Nil()
+      case Cons(h, Nil())        => Cons(h, Nil())
       case Cons(h, Cons(h1, t1)) => Cons(h, evenIndices(t1))
 
     /*
@@ -117,10 +117,10 @@ object Sequences: // Essentially, generic linkedlists
      */
     @tailrec
     def contains[A](s: Sequence[A])(elem: A): Boolean = s match
-      case Nil() => false
-      case Cons(h, Nil()) => h==elem
+      case Nil()                 => false
+      case Cons(h, Nil())        => h==elem
       case Cons(h, t) if h!=elem => contains(t)(elem)
-      case _ => true
+      case _                     => true
 
     /*
      * Remove duplicates from the sequence
@@ -130,11 +130,11 @@ object Sequences: // Essentially, generic linkedlists
     def distinct[A](s: Sequence[A]): Sequence[A] =
       @tailrec
       def _distinct(sequence: Sequence[A], acc: Sequence[A]): Sequence[A] = sequence match
-        case Nil() => acc
+        case Nil()                              => acc
         case Cons(h, Nil()) if contains(acc)(h) => acc
-        case Cons(h, Nil()) => concat(acc, Cons(h, Nil()))
-        case Cons(h, t) if contains(acc)(h) => _distinct(t, acc)
-        case Cons(h, t) => _distinct(t, concat(acc, Cons(h, Nil())))
+        case Cons(h, Nil())                     => concat(acc, Cons(h, Nil()))
+        case Cons(h, t) if contains(acc)(h)     => _distinct(t, acc)
+        case Cons(h, t)                         => _distinct(t, concat(acc, Cons(h, Nil())))
       _distinct(s, Nil())
 
     /*
@@ -144,10 +144,10 @@ object Sequences: // Essentially, generic linkedlists
      * E.g., [10, 20, 20, 30] => [[10], [20, 20], [30]]
      */
     def group[A](s: Sequence[A]): Sequence[Sequence[A]] = s match
-      case Nil() => Nil()
-      case Cons(h, Nil()) => Cons(Cons(h, Nil()), Nil())
+      case Nil()                          => Nil()
+      case Cons(h, Nil())                 => Cons(Cons(h, Nil()), Nil())
       case Cons(h, Cons(h1, t1)) if h==h1 => Cons(Cons(h, Cons(h1, Nil())), group(t1))
-      case Cons(h, t) => Cons(Cons(h, Nil()), group(t))
+      case Cons(h, t)                     => Cons(Cons(h, Nil()), group(t))
 
     /*
      * Partition the sequence into two sequences based on the predicate
@@ -157,11 +157,11 @@ object Sequences: // Essentially, generic linkedlists
     def partition[A](s: Sequence[A])(pred: A => Boolean): (Sequence[A], Sequence[A]) =
       @tailrec
       def recursivePartition(sequence: Sequence[A], f: A => Boolean, acc1: Sequence[A], acc2: Sequence[A]): (Sequence[A], Sequence[A]) = sequence match
-        case Nil() => (acc1, acc2)
+        case Nil()                  => (acc1, acc2)
         case Cons(h, Nil()) if f(h) => (concat(acc1, Cons(h, Nil())), concat(acc2, Nil()))
-        case Cons(h, Nil()) => (acc1, concat(acc2, Cons(h, Nil())))
-        case Cons(h, t) if f(h) => recursivePartition(t, f, concat(acc1, Cons(h, Nil())), acc2)
-        case Cons(h, t) => recursivePartition(t, f, acc1, concat(acc2, Cons(h, Nil())))
+        case Cons(h, Nil())         => (acc1, concat(acc2, Cons(h, Nil())))
+        case Cons(h, t) if f(h)     => recursivePartition(t, f, concat(acc1, Cons(h, Nil())), acc2)
+        case Cons(h, t)             => recursivePartition(t, f, acc1, concat(acc2, Cons(h, Nil())))
       recursivePartition(s, pred, Nil(), Nil())
 
 @main def trySequences =
